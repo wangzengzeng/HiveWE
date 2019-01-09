@@ -35,6 +35,7 @@ public:
 
 	QRibbonButton* import_manager = new QRibbonButton;
 	QRibbonButton* trigger_viewer = new QRibbonButton;
+	QRibbonButton* object_editor = new QRibbonButton;
 
 	QRibbonButton* terrain_palette = new QRibbonButton;
 	QRibbonButton* doodad_palette = new QRibbonButton;

@@ -85,6 +85,8 @@ namespace fs = std::filesystem;
 #include "StaticMesh.h"
 #include "SkinnedMesh.h"
 
+#include "WidgetProperties.h"
+#include "EditorWidgets.h"
 #include "TriggerStrings.h"
 #include "Triggers.h"
 #include "TerrainUndo.h"
@@ -110,6 +112,7 @@ namespace fs = std::filesystem;
 #include "GLWidget.h"
 
 // Menus
+#include "ObjectEditor.h"
 #include "ImportManagerEdit.h"
 #include "ImportManager.h"
 #include "MapInfoEditor.h"

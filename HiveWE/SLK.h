@@ -2,13 +2,13 @@
 
 namespace slk {
 	class SLK {
-		std::vector<std::vector<std::string>> table_data;
-		std::vector<std::vector<std::string>> shadow_data;
-
 		std::unordered_map<std::string, size_t> header_to_column;
 
 		constexpr static char shadow_table_empty_identifier[] = "dezecelisleeg"; // not a nice way to do this
 	public:
+		std::vector<std::vector<std::string>> table_data;
+		std::vector<std::vector<std::string>> shadow_data;
+
 		size_t rows = 0;
 		size_t columns = 0;
 

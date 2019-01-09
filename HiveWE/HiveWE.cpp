@@ -13,6 +13,12 @@ slk::SLK doodads_slk;
 slk::SLK doodads_meta_slk;
 slk::SLK destructibles_slk;
 slk::SLK destructibles_meta_slk;
+slk::SLK upgrades_slk;
+slk::SLK upgrades_meta_slk;
+slk::SLK effects_slk;
+slk::SLK effects_meta_slk;
+slk::SLK abilities_slk;
+slk::SLK abilities_meta_slk;
 
 HiveWE::HiveWE(QWidget* parent) : QMainWindow(parent) {
 	fs::path directory = find_warcraft_directory();
@@ -119,6 +125,7 @@ HiveWE::HiveWE(QWidget* parent) : QMainWindow(parent) {
 
 	connect(ui.ribbon->import_manager, &QRibbonButton::clicked, []() { window_handler.create_or_raise<ImportManager>(); });
 	connect(ui.ribbon->trigger_viewer, &QRibbonButton::clicked, []() { window_handler.create_or_raise<TriggerEditor>(); });
+	connect(ui.ribbon->object_editor, &QRibbonButton::clicked, []() { window_handler.create_or_raise<ObjectEditor>(); });
 
 	minimap->setParent(ui.widget);
 	minimap->move(10, 10);

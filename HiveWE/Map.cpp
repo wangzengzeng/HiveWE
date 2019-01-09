@@ -22,13 +22,19 @@ void Map::load(const fs::path& path) {
 	units_slk.merge(ini::INI("Units/UndeadUnitFunc.txt"));
 	units_slk.merge(ini::INI("Units/NightElfUnitFunc.txt"));
 	units_slk.merge(ini::INI("Units/NeutralUnitFunc.txt"));
+	units_slk.merge(ini::INI("Units/CampaignUnitFunc.txt"));
 
 	units_slk.merge(ini::INI("Units/HumanUnitStrings.txt"));
 	units_slk.merge(ini::INI("Units/OrcUnitStrings.txt"));
 	units_slk.merge(ini::INI("Units/UndeadUnitStrings.txt"));
 	units_slk.merge(ini::INI("Units/NightElfUnitStrings.txt"));
 	units_slk.merge(ini::INI("Units/NeutralUnitStrings.txt"));
+	units_slk.merge(ini::INI("Units/CampaignUnitStrings.txt"));
 
+	units_slk.substitute(world_edit_data, "WorldEditStrings");
+	units_slk.substitute(world_edit_strings, "WorldEditStrings");
+
+	units_meta_slk.substitute(world_edit_strings, "WorldEditStrings");
 	// Items
 	items_slk = slk::SLK("Units/ItemData.slk");
 	items_slk.merge(ini::INI("Units/ItemFunc.txt"));
@@ -37,16 +43,97 @@ void Map::load(const fs::path& path) {
 	// Doodads
 	doodads_slk = slk::SLK("Doodads/Doodads.slk");
 	doodads_meta_slk = slk::SLK("Doodads/DoodadMetaData.slk");
-	
+
 	doodads_slk.substitute(world_edit_strings, "WorldEditStrings");
 	doodads_slk.substitute(world_edit_game_strings, "WorldEditStrings");
 
+	doodads_meta_slk.substitute(world_edit_strings, "WorldEditStrings");
 	// Destructibles
 	destructibles_slk = slk::SLK("Units/DestructableData.slk");
 	destructibles_meta_slk = slk::SLK("Units/DestructableMetaData.slk");
 
 	destructibles_slk.substitute(world_edit_strings, "WorldEditStrings");
 	destructibles_slk.substitute(world_edit_game_strings, "WorldEditStrings");
+
+	destructibles_meta_slk.substitute(world_edit_strings, "WorldEditStrings");
+
+	// Abilities
+	abilities_slk = slk::SLK("Units/AbilityData.slk");
+	abilities_meta_slk = slk::SLK("Units/AbilityMetaData.slk");
+
+	abilities_slk.merge(ini::INI("Units/HumanAbilityFunc.txt"));
+	abilities_slk.merge(ini::INI("Units/OrcAbilityFunc.txt"));
+	abilities_slk.merge(ini::INI("Units/UndeadAbilityFunc.txt"));
+	abilities_slk.merge(ini::INI("Units/NightElfAbilityFunc.txt"));
+	abilities_slk.merge(ini::INI("Units/NeutralAbilityFunc.txt"));
+	abilities_slk.merge(ini::INI("Units/ItemAbilityFunc.txt"));
+	abilities_slk.merge(ini::INI("Units/CommonAbilityFunc.txt"));
+	abilities_slk.merge(ini::INI("Units/CampaignAbilityFunc.txt"));
+
+	abilities_slk.merge(ini::INI("Units/HumanAbilityStrings.txt"));
+	abilities_slk.merge(ini::INI("Units/OrcAbilityStrings.txt"));
+	abilities_slk.merge(ini::INI("Units/UndeadAbilityStrings.txt"));
+	abilities_slk.merge(ini::INI("Units/NightElfAbilityStrings.txt"));
+	abilities_slk.merge(ini::INI("Units/NeutralAbilityStrings.txt"));
+	abilities_slk.merge(ini::INI("Units/ItemAbilityStrings.txt"));
+	abilities_slk.merge(ini::INI("Units/CommonAbilityStrings.txt"));
+	abilities_slk.merge(ini::INI("Units/CampaignAbilityStrings.txt"));
+
+	abilities_slk.substitute(world_edit_strings, "WorldEditStrings");
+	abilities_slk.substitute(world_edit_game_strings, "WorldEditStrings");
+
+	abilities_meta_slk.substitute(world_edit_strings, "WorldEditStrings");
+
+	// Buffs/Effects
+	effects_slk = slk::SLK("Units/AbilityBuffData.slk");
+
+	effects_slk.merge(ini::INI("Units/HumanAbilityFunc.txt"));
+	effects_slk.merge(ini::INI("Units/OrcAbilityFunc.txt"));
+	effects_slk.merge(ini::INI("Units/UndeadAbilityFunc.txt"));
+	effects_slk.merge(ini::INI("Units/NightElfAbilityFunc.txt"));
+	effects_slk.merge(ini::INI("Units/NeutralAbilityFunc.txt"));
+	effects_slk.merge(ini::INI("Units/ItemAbilityFunc.txt"));
+	effects_slk.merge(ini::INI("Units/CommonAbilityFunc.txt"));
+	effects_slk.merge(ini::INI("Units/CampaignAbilityFunc.txt"));
+
+	/*effects_slk.merge(ini::INI("Units/HumanUpgradeStrings.txt"));
+	effects_slk.merge(ini::INI("Units/OrcUpgradeStrings.txt"));
+	effects_slk.merge(ini::INI("Units/NightelfUpgradeStrings.txt"));
+	effects_slk.merge(ini::INI("Units/UndeadUpgradeStrings.txt"));
+	effects_slk.merge(ini::INI("Units/NeutralUpgradeStrings.txt"));
+	effects_slk.merge(ini::INI("Units/CampaignUpgradeStrings.txt"));*/
+
+	effects_slk.merge(ini::INI("Units/HumanAbilityStrings.txt"));
+	effects_slk.merge(ini::INI("Units/OrcAbilityStrings.txt"));
+	effects_slk.merge(ini::INI("Units/UndeadAbilityStrings.txt"));
+	effects_slk.merge(ini::INI("Units/NightElfAbilityStrings.txt"));
+	effects_slk.merge(ini::INI("Units/NeutralAbilityStrings.txt"));
+	effects_slk.merge(ini::INI("Units/ItemAbilityStrings.txt"));
+	effects_slk.merge(ini::INI("Units/CommonAbilityStrings.txt"));
+	effects_slk.merge(ini::INI("Units/CampaignAbilityStrings.txt"));
+
+	effects_meta_slk = slk::SLK("Units/AbilityBuffMetaData.slk");
+
+	effects_slk.substitute(world_edit_strings, "WorldEditStrings");
+	effects_slk.substitute(world_edit_game_strings, "WorldEditStrings");
+
+	effects_meta_slk.substitute(world_edit_strings, "WorldEditStrings");
+	// Upgrades
+	upgrades_slk = slk::SLK("Units/UpgradeData.slk");
+	upgrades_slk.merge(ini::INI("Units/HumanUpgradeFunc.txt"));
+	upgrades_slk.merge(ini::INI("Units/OrcUpgradeFunc.txt"));
+	upgrades_slk.merge(ini::INI("Units/UndeadUpgradeFunc.txt"));
+	upgrades_slk.merge(ini::INI("Units/NightElfUpgradeFunc.txt"));
+	upgrades_slk.merge(ini::INI("Units/NeutralUpgradeFunc.txt"));
+	upgrades_slk.merge(ini::INI("Units/CampaignUpgradeFunc.txt"));
+
+	upgrades_meta_slk = slk::SLK("Units/UpgradeMetaData.slk");
+	upgrades_meta_slk.merge(slk::SLK("Units/UpgradeEffectMetaData.slk"));
+
+	upgrades_slk.substitute(world_edit_strings, "WorldEditStrings");
+	upgrades_slk.substitute(world_edit_game_strings, "WorldEditStrings");
+
+	upgrades_meta_slk.substitute(world_edit_strings, "WorldEditStrings");
 
 	// Trigger strings
 	if (hierarchy.map.file_exists("war3map.wts")) {
@@ -140,6 +227,44 @@ void Map::load(const fs::path& path) {
 			units.create();
 		}
 	}
+
+	// Abilities
+	if (hierarchy.map.file_exists("war3map.w3a")) {
+		BinaryReader war3map_w3a(hierarchy.map.file_open("war3map.w3a").read());
+		const int version = war3map_w3a.read<uint32_t>();
+		if (version != 1 && version != 2) {
+			std::cout << "Unknown item modification table version of " << version << " detected. Attempting to load, but may crash.\n";
+		}
+		//load_modification_table(war3map_w3a, abilities_slk, abilities_meta_slk, false);
+		//load_modification_table(war3map_w3a, abilities_slk, abilities_meta_slk, true);
+	}
+
+	// Upgrades
+	if (hierarchy.map.file_exists("war3map.w3q")) {
+		BinaryReader war3map_w3q(hierarchy.map.file_open("war3map.w3q").read());
+		const int version = war3map_w3q.read<uint32_t>();
+		if (version != 1 && version != 2) {
+			std::cout << "Unknown item modification table version of " << version << " detected. Attempting to load, but may crash.\n";
+		}
+		//load_modification_table(war3map_w3q, upgrades_slk, upgrades_meta_slk, false);
+		//load_modification_table(war3map_w3q, upgrades_slk, upgrades_meta_slk, true);
+	}
+
+	// Buffs
+	if (hierarchy.map.file_exists("war3map.w3h")) {
+		BinaryReader war3map_w3h(hierarchy.map.file_open("war3map.w3h").read());
+		const int version = war3map_w3h.read<uint32_t>();
+		if (version != 1 && version != 2) {
+			std::cout << "Unknown item modification table version of " << version << " detected. Attempting to load, but may crash.\n";
+		}
+		//load_modification_table(war3map_w3h, effects_slk, effects_meta_slk, false);
+		//load_modification_table(war3map_w3h, effects_slk, effects_meta_slk, true);
+	}
+
+	abilities_slk.save("C:\\Users\\Abovegame\\Desktop\\abilities_with_modifications.slk");
+	map->objects.clear();
+	map->objects.load();
+	map->objects.properties.load();
 
 	camera->position = glm::vec3(terrain.width / 2, terrain.height / 2, 10);
 	camera->reset();

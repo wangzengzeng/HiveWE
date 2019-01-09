@@ -44,3 +44,10 @@ extern slk::SLK doodads_slk;
 extern slk::SLK doodads_meta_slk;
 extern slk::SLK destructibles_slk;
 extern slk::SLK destructibles_meta_slk;
+
+extern slk::SLK upgrades_slk;
+extern slk::SLK upgrades_meta_slk;
+extern slk::SLK effects_slk;
+extern slk::SLK effects_meta_slk;
+extern slk::SLK abilities_slk;
+extern slk::SLK abilities_meta_slk;

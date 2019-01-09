@@ -220,6 +220,10 @@ MainRibbon::MainRibbon(QWidget* parent) : QRibbon(parent) {
 	trigger_viewer->setText("Trigger\nViewer");
 	editor_section->addWidget(trigger_viewer);
 
+	object_editor->setIcon(QIcon("Data/Icons/Ribbon/triggereditor32x32.png"));
+	object_editor->setText("Object\nEditor");
+	editor_section->addWidget(object_editor);
+
 	QRibbonSection* palette_section = new QRibbonSection;
 	palette_section->setText("Palette"); 
 	
