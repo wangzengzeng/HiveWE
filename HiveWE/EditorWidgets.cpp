@@ -235,7 +235,7 @@ std::string AbilityWidget::generate_path() {
 	} else {
 		race = "Neutral Passive";
 	}
-	std::string hero = "";
+	
 	if (is_hero) {
 		return std_folder + "\\" + race + "\\" + "Heroes";
 	} else if (is_item) {

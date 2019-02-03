@@ -193,7 +193,7 @@ void Map::load(const fs::path& path) {
 	// Doodads
 	BinaryReader war3map_doo(hierarchy.map.file_open("war3map.doo").read());
 	success = doodads.load(war3map_doo, terrain);
-
+	std::cout << "Loading Doodads SLKs." << std::endl;
 	if (hierarchy.map.file_exists("war3map.w3d")) {
 		BinaryReader war3map_w3d = BinaryReader(hierarchy.map.file_open("war3map.w3d").read());
 		doodads.load_doodad_modifications(war3map_w3d);
@@ -209,11 +209,12 @@ void Map::load(const fs::path& path) {
 	pathing_map.update_dynamic();
 
 	// Units/Items
+	std::cout << "Loading Unit SLKs." << std::endl;
 	if (hierarchy.map.file_exists("war3map.w3u")) {
 		BinaryReader war3map_w3u = BinaryReader(hierarchy.map.file_open("war3map.w3u").read());
 		units.load_unit_modifications(war3map_w3u);
 	}
-
+	std::cout << "Loading Item SLKs." << std::endl;
 	if (hierarchy.map.file_exists("war3map.w3t")) {
 		BinaryReader war3map_w3t = BinaryReader(hierarchy.map.file_open("war3map.w3t").read());
 		units.load_item_modifications(war3map_w3t);
@@ -229,36 +230,39 @@ void Map::load(const fs::path& path) {
 	}
 
 	// Abilities
+	std::cout << "Loading Ability SLKs." << std::endl;
 	if (hierarchy.map.file_exists("war3map.w3a")) {
 		BinaryReader war3map_w3a(hierarchy.map.file_open("war3map.w3a").read());
 		const int version = war3map_w3a.read<uint32_t>();
 		if (version != 1 && version != 2) {
 			std::cout << "Unknown item modification table version of " << version << " detected. Attempting to load, but may crash.\n";
 		}
-		//load_modification_table(war3map_w3a, abilities_slk, abilities_meta_slk, false);
-		//load_modification_table(war3map_w3a, abilities_slk, abilities_meta_slk, true);
+		load_modification_table(war3map_w3a, abilities_slk, abilities_meta_slk, false, true);
+		load_modification_table(war3map_w3a, abilities_slk, abilities_meta_slk, true, true);
 	}
 
 	// Upgrades
+	std::cout << "Loading Upgrades SLKs." << std::endl;
 	if (hierarchy.map.file_exists("war3map.w3q")) {
 		BinaryReader war3map_w3q(hierarchy.map.file_open("war3map.w3q").read());
 		const int version = war3map_w3q.read<uint32_t>();
 		if (version != 1 && version != 2) {
 			std::cout << "Unknown item modification table version of " << version << " detected. Attempting to load, but may crash.\n";
 		}
-		//load_modification_table(war3map_w3q, upgrades_slk, upgrades_meta_slk, false);
-		//load_modification_table(war3map_w3q, upgrades_slk, upgrades_meta_slk, true);
+		load_modification_table(war3map_w3q, upgrades_slk, upgrades_meta_slk, false,true);
+		load_modification_table(war3map_w3q, upgrades_slk, upgrades_meta_slk, true,true);
 	}
 
 	// Buffs
+	std::cout << "Loading Buffs SLKs." << std::endl;
 	if (hierarchy.map.file_exists("war3map.w3h")) {
 		BinaryReader war3map_w3h(hierarchy.map.file_open("war3map.w3h").read());
 		const int version = war3map_w3h.read<uint32_t>();
 		if (version != 1 && version != 2) {
 			std::cout << "Unknown item modification table version of " << version << " detected. Attempting to load, but may crash.\n";
 		}
-		//load_modification_table(war3map_w3h, effects_slk, effects_meta_slk, false);
-		//load_modification_table(war3map_w3h, effects_slk, effects_meta_slk, true);
+		load_modification_table(war3map_w3h, effects_slk, effects_meta_slk, false);
+		load_modification_table(war3map_w3h, effects_slk, effects_meta_slk, true);
 	}
 
 	abilities_slk.save("C:\\Users\\Abovegame\\Desktop\\abilities_with_modifications.slk");

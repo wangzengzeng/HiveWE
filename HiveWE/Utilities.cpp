@@ -139,12 +139,44 @@ void load_modification_table(BinaryReader& reader, slk::SLK& base_data, slk::SLK
 			const std::string modification_id = reader.read_string(4);
 			const uint32_t type = reader.read<uint32_t>();
 
-			if (optional_ints) {
-				// ToDo dont Skip optional ints
-				reader.advance(8);
-			}
 
-			const std::string column_header = meta_data.data("field", modification_id);
+			std::string column_header = meta_data.data("field", modification_id);
+
+			if (optional_ints) {
+				// Level or variation depending on which type of slk provided. ( Abilities / Upgrades or Doodads )
+				const uint32_t variation_id = reader.read<uint32_t>();
+				std::cout << "Variation ID: " << variation_id << std::endl;
+				const uint32_t data_pointer = reader.read<uint32_t>();
+				std::string data_id = std::string();
+
+				if (variation_id != 0) {
+					switch (data_pointer) {
+					case 0:
+						data_id.push_back('A');
+						break;
+					case 1:
+						data_id.push_back('B');
+						break;
+					case 2:
+						data_id.push_back('C');
+						break;
+					case 3:
+						data_id.push_back('D');
+						break;
+					case 4:
+						data_id.push_back('F');
+						break;
+					case 5:
+						data_id.push_back('G');
+						break;
+					case 6:
+						data_id.push_back('H');
+						break;
+					}
+
+					column_header.append(data_id + std::to_string(variation_id));
+				}
+			}
 
 			std::string data;
 			switch (type) {
@@ -152,6 +184,8 @@ void load_modification_table(BinaryReader& reader, slk::SLK& base_data, slk::SLK
 					data = std::to_string(reader.read<int>());
 					break;
 				case 1:
+					data = std::to_string(reader.read<float>());
+					break;
 				case 2:
 					data = std::to_string(reader.read<float>());
 					break;
