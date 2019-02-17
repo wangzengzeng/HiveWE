@@ -144,37 +144,43 @@ void load_modification_table(BinaryReader& reader, slk::SLK& base_data, slk::SLK
 
 			if (optional_ints) {
 				// Level or variation depending on which type of slk provided. ( Abilities / Upgrades or Doodads )
-				const uint32_t variation_id = reader.read<uint32_t>();
-				std::cout << "Variation ID: " << variation_id << std::endl;
+				const uint32_t repeat = reader.read<uint32_t>();
 				const uint32_t data_pointer = reader.read<uint32_t>();
 				std::string data_id = std::string();
 
-				if (variation_id != 0) {
+				if (repeat != 0 && data_pointer != 0) {
 					switch (data_pointer) {
-					case 0:
+					case 1:
 						data_id.push_back('A');
 						break;
-					case 1:
+					case 2:
 						data_id.push_back('B');
 						break;
-					case 2:
+					case 3:
 						data_id.push_back('C');
 						break;
-					case 3:
+					case 4:
 						data_id.push_back('D');
 						break;
-					case 4:
+					case 5:
 						data_id.push_back('F');
 						break;
-					case 5:
+					case 6:
 						data_id.push_back('G');
 						break;
-					case 6:
+					case 7:
 						data_id.push_back('H');
 						break;
+					case 8:
+						break;
+					case 9: 
+						break;
 					}
-
-					column_header.append(data_id + std::to_string(variation_id));
+					column_header.append(data_id + std::to_string(repeat));
+				} else if (repeat > 0 && data_pointer == 0){
+					if ( !std::isdigit(meta_data.data("ID", modification_id).back()) ) {
+						column_header.append(std::to_string(repeat));
+					} 
 				}
 			}
 

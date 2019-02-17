@@ -47,6 +47,7 @@ class AbilityWidget : public WidgetData {
 public:
 	bool is_hero = false;
 	bool is_item = false;
+	int levels = 0;
 	std::string generate_path();
 	using WidgetData::WidgetData;
 };

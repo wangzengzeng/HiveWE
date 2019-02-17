@@ -114,12 +114,14 @@ void ObjectEditorExtension::load() {
 		std::string ability_name = abilities_slk.data("Name", ability_id);
 		std::string suffix = abilities_slk.data("EditorSuffix", ability_id);
 		std::string path = abilities_slk.data("Art", ability_id);
+		
 		if (auto vec = split(path, '.'); vec.size() > 2 || path == "") {
 			path = "ReplaceableTextures\\WorldEditUI\\DoodadPlaceholder.blp";
 		}
 		AbilityWidget a(ability_id, ability_name, suffix, "", path);
 		a.is_hero = (abilities_slk.data<int>("hero", ability_id))? true : false;
 		a.is_item = (abilities_slk.data<int>("item", ability_id)) ? true : false;
+		a.levels = abilities_slk.data<int>("levels", ability_id);
 		map->objects.append(a);
 
 	}
