@@ -1,4 +1,5 @@
 #include "stdafx.h"
+ 
 
 namespace mpq {
 	File::~File() {
@@ -59,12 +60,32 @@ namespace mpq {
 		open(path, flags);
 	}
 
+	MPQ::MPQ(File archive, const unsigned long flags) {
+		open(archive, flags);
+	}
+
 	MPQ::~MPQ() {
 		close();
 	}
 
 	bool MPQ::open(const fs::path& path, const unsigned long flags) {
 		return SFileOpenArchive(path.c_str(), 0, flags, &handle);
+	}
+
+	void MPQ::open(File& archive, const unsigned long flags) {
+		const std::vector<uint8_t> buffer = archive.read();
+
+		// Create unique name for temp file
+		local_path = QDir::tempPath().toStdString() + "/" + std::to_string(time(nullptr)) + ".mpq";
+		std::ofstream output(local_path, std::ofstream::binary);
+		if (!output) {
+			std::cout << "Opening/Creation failed for: " << local_path << std::endl;
+		}
+
+		output.write(reinterpret_cast<const char*>(buffer.data()), buffer.size() * sizeof(uint8_t));
+		output.close();
+
+		open(local_path, flags);
 	}
 
 	File MPQ::file_open(const fs::path& path) const {
@@ -113,5 +134,6 @@ namespace mpq {
 	void MPQ::close() {
 		SFileCloseArchive(handle);
 		handle = nullptr;
+		fs::remove(local_path);
 	}
 }

@@ -11,7 +11,7 @@ TriggerEditor::TriggerEditor(QWidget* parent) : QMainWindow(parent) {
 	folder_icon = icons.icon(QFileIconProvider::Folder);
 	file_icon = icons.icon(QFileIconProvider::File);
 
-	trigger_comment_icon = texture_to_icon(world_edit_data.data("WorldEditArt", "SEIcon_TriggerComment") + ".blp");
+	trigger_comment_icon = texture_to_icon(world_edit_data.data("WorldEditArt", "SEIcon_TriggerComment"));
 
 	event_icon = texture_to_icon(world_edit_data.data("WorldEditArt", "SEIcon_Event"));
 	condition_icon = texture_to_icon(world_edit_data.data("WorldEditArt", "SEIcon_Condition"));

@@ -19,12 +19,17 @@ HiveWE::HiveWE(QWidget* parent) : QMainWindow(parent) {
 	setAutoFillBackground(true);
 
 	fs::path directory = find_warcraft_directory();
-	while (!fs::exists(directory / "Data") || directory == "") {
+	while (!fs::exists(directory / "War3x.mpq")) {
 		directory = QFileDialog::getExistingDirectory(this, "Select Warcraft Directory", "/home", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks).toStdWString();
-		if (directory == "") {
-			exit(EXIT_SUCCESS);
-		}
 	}
+
+	//fs::path directory = find_warcraft_directory();
+	//while (!fs::exists(directory / "Data") || directory == "") {
+	//	directory = QFileDialog::getExistingDirectory(this, "Select Warcraft Directory", "/home", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks).toStdWString();
+	//	if (directory == "") {
+	//		exit(EXIT_SUCCESS);
+	//	}
+	//}
 	QSettings settings;
 	settings.setValue("warcraftDirectory", QString::fromStdString(directory.string()));
 	hierarchy.warcraft_directory = directory;

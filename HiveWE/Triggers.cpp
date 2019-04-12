@@ -76,7 +76,7 @@ void Triggers::load(BinaryReader& reader) {
 	//	}
 	//	i.is_initialized = reader.read<uint32_t>();
 	//	i.initial_value = reader.read_c_string();
-	//}
+	//} 
 
 	std::function<void(TriggerParameter&)> parse_parameter_structure = [&](TriggerParameter& parameter) {
 		parameter.type = static_cast<TriggerParameter::Type>(reader.read<uint32_t>());

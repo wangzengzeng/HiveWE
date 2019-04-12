@@ -30,10 +30,12 @@ namespace mpq {
 	class MPQ {
 	public:
 		HANDLE handle;
-
+		fs::path local_path;
 		MPQ() = default;
 
 		explicit MPQ(const fs::path& path, unsigned long flags = 0);
+		explicit MPQ(File archive, unsigned long flags = 0);
+
 		~MPQ();
 		MPQ(MPQ&& move) noexcept {
 			handle = move.handle;
@@ -48,8 +50,9 @@ namespace mpq {
 		}
 
 		bool open(const fs::path& path, unsigned long flags = 0);
+		void open(File& archive, unsigned long flags = 0);
 		void close();
-
+		 
 		File file_open(const fs::path& path) const;
 		void file_write(const fs::path& path, const std::vector<uint8_t>& data);
 		void file_remove(const fs::path& path) const;

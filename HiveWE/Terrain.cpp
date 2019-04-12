@@ -98,7 +98,7 @@ void Terrain::create() {
 	}
 	// Done parsing
 
-	hierarchy.tileset = tileset;
+	hierarchy.load_tileset(tileset);
 
 	terrain_slk.load("TerrainArt/Terrain.slk");
 	cliff_slk.load("TerrainArt/CliffTypes.slk");
@@ -125,6 +125,7 @@ void Terrain::create() {
 
 	shallow_color_max = { red, green, blue, alpha };
 	shallow_color_max /= 255.f;
+
 
 	red = water_slk.data<int>("Dmin_R", tileset + "Sha"s);
 	green = water_slk.data<int>("Dmin_G", tileset + "Sha"s);

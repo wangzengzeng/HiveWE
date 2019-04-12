@@ -1,0 +1,5 @@
+[WorldEditArt]
+SEIcon_TriggerComment=test.blp
+SEIcon_Event=test.blp
+SEIcon_Condition=test.blp
+SEIcon_Action=test.blp
