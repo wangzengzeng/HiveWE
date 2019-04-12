@@ -246,7 +246,7 @@ void Map::play_test() {
 		return;
 	}
 	QProcess* warcraft = new QProcess;
-	const QString warcraft_path = QString::fromStdString((hierarchy.warcraft_directory / "Warcraft III.exe").string());
+	const QString warcraft_path = QString::fromStdString((hierarchy.warcraft_directory / "war3.exe").string());
 	QStringList arguments;
 	arguments << "-loadfile" << QString::fromStdString(path.string());
 

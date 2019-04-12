@@ -17,8 +17,8 @@ int main(int argc, char *argv[]) {
 	QSurfaceFormat::setDefaultFormat(format);
 
 	QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
-	QCoreApplication::setOrganizationName("HiveWE");
-	QCoreApplication::setApplicationName("HiveWE");
+	QCoreApplication::setOrganizationName("·ä³²WE");
+	QCoreApplication::setApplicationName("·ä³²WE");
 
 	QApplication a(argc, argv);
 
