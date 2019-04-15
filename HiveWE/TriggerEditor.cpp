@@ -85,15 +85,15 @@ void TriggerEditor::item_clicked(QTreeWidgetItem* item) {
 
 void TriggerEditor::show_gui_trigger(QTreeWidget* edit, Trigger& trigger) {
 	QTreeWidgetItem* events = new QTreeWidgetItem(edit);
-	events->setText(0, "Events");
+	events->setText(0, u8"事件");
 	events->setIcon(0, event_icon);
 
 	QTreeWidgetItem* conditions = new QTreeWidgetItem(edit);
-	conditions->setText(0, "Conditions");
+	conditions->setText(0, u8"条件");
 	conditions->setIcon(0, condition_icon);
 
 	QTreeWidgetItem* actions = new QTreeWidgetItem(edit);
-	actions->setText(0, "Actions");
+	actions->setText(0, u8"动作");
 	actions->setIcon(0, action_icon);
 
 	std::function<void(QTreeWidgetItem*, ECA&)> recurse = [&](QTreeWidgetItem* parent, ECA& i) {
@@ -121,7 +121,12 @@ void TriggerEditor::show_gui_trigger(QTreeWidget* edit, Trigger& trigger) {
 
 		if (auto found = trigger_icons.find(category); found == trigger_icons.end()) {
 			std::string icon_path = map->triggers.trigger_data.data("TriggerCategories", category, 1);
-			std::string final_path = icon_path + ".blp";
+			std::string final_path = icon_path;
+			fs::path type = fs::path(final_path).extension();
+			if (type != ".blp")
+			{
+				final_path += ".blp";
+			}
 			QIcon icon = texture_to_icon(final_path);
 			trigger_icons[category] = icon;
 			eca->setIcon(0, icon);
