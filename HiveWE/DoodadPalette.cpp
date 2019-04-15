@@ -27,7 +27,7 @@ DoodadPalette::DoodadPalette(QWidget* parent) : Palette(parent) {
 
 	QRibbonSection* selection_section = new QRibbonSection;
 
-	selection_mode->setText("Selection\nMode");
+	selection_mode->setText(u8"选择模式");
 	selection_mode->setIcon(QIcon("Data/Icons/Ribbon/select32x32.png"));
 	selection_mode->setCheckable(true);
 	selection_section->addWidget(selection_mode);
@@ -35,27 +35,27 @@ DoodadPalette::DoodadPalette(QWidget* parent) : Palette(parent) {
 	selection_mode->setShortCut(Qt::Key_Space, { this, parent });
 
 	QRibbonSection* placement_section = new QRibbonSection;
-	placement_section->setText("Placement");
+	placement_section->setText(u8"放置");
 
 	QRibbonButton* random_rotation = new QRibbonButton;
-	random_rotation->setText("Random\nRotation");
+	random_rotation->setText(u8"随机角度");
 	random_rotation->setIcon(QIcon("Data/Icons/Ribbon/reset32x32.png"));
 	random_rotation->setCheckable(true);
 	random_rotation->setChecked(true);
 	placement_section->addWidget(random_rotation);
 
 	QRibbonButton* random_scale = new QRibbonButton;
-	random_scale->setText("Random\nScale");
+	random_scale->setText(u8"随机缩放");
 	random_scale->setIcon(QIcon("Data/Icons/Ribbon/scale32x32.png"));
 	random_scale->setCheckable(true);
 	random_scale->setChecked(true);
 	placement_section->addWidget(random_scale);
 
 	QRibbonSection* variation_section = new QRibbonSection;
-	variation_section->setText("Variations");
+	variation_section->setText(u8"样式");
 
 	QRibbonButton* random_variation = new QRibbonButton;
-	random_variation->setText("Random\nVariation");
+	random_variation->setText(u8"随机样式");
 	random_variation->setIcon(QIcon("Data/Icons/Ribbon/variation32x32.png"));
 	random_variation->setCheckable(true);
 	random_variation->setChecked(true);
@@ -63,7 +63,7 @@ DoodadPalette::DoodadPalette(QWidget* parent) : Palette(parent) {
 	variation_section->addWidget(variations);
 
 	QRibbonSection* flags_section = new QRibbonSection;
-	flags_section->setText("Flags");
+	flags_section->setText(u8"标记");
 	flags_section->setStyleSheet(R"(
 		QDoubleSpinBox {
 			border: 1px solid black;
@@ -90,7 +90,7 @@ DoodadPalette::DoodadPalette(QWidget* parent) : Palette(parent) {
 	flags_section->addLayout(visibility_flags_layout);
 
 
-	pathing_section->setText("Pathing");
+	pathing_section->setText(u8"通行");
 	pathing_section->addWidget(pathing_image_label);
 
 
@@ -161,7 +161,7 @@ bool DoodadPalette::event(QEvent *e) {
 	} else if (e->type() == QEvent::WindowActivate) {
 		selection_mode->enableShortcuts();
 		map->brush = &brush;
-		emit ribbon_tab_requested(ribbon_tab, "Doodad Palette");
+		emit ribbon_tab_requested(ribbon_tab, u8"装饰物面板");
 	}
 
 	return QWidget::event(e);
@@ -169,7 +169,11 @@ bool DoodadPalette::event(QEvent *e) {
 
 void DoodadPalette::update_list() {
 	ui.doodads->clear();
-	
+	auto a = ui.tileset->currentData();
+	auto b = a.toString();
+	auto c = b.toStdString();
+	auto d = c.front();
+
 	char selected_tileset = ui.tileset->currentData().toString().toStdString().front();
 	std::string selected_category = ui.type->currentData().toString().toStdString();
 

@@ -148,8 +148,10 @@ HiveWE::HiveWE(QWidget* parent) : QMainWindow(parent) {
 	map = new Map();
 	connect(&map->terrain, &Terrain::minimap_changed, minimap, &Minimap::set_minimap);
 	//map->load("C:\\Users\\User\\stack\\Projects\\MCFC\\7.3\\Backup\\MCFC 7.3.w3x");
-	map->load("Data/Test.w3x");
-
+	fs::remove(fs::temp_directory_path() / "temp.w3x");
+	fs::copy_file("Data/Test.w3x", fs::temp_directory_path() / "temp.w3x");
+	map->load(fs::temp_directory_path() / "temp.w3x");
+	
 
 	//QTimer::singleShot(50, [this]() {
 	//	auto palette = new TerrainPalette(this);
@@ -213,12 +215,18 @@ void HiveWE::closeEvent(QCloseEvent* event) {
 }
 
 void HiveWE::switch_warcraft() {
-	fs::path directory;
-	do {
-		directory = QFileDialog::getExistingDirectory(this, "Select Warcraft Directory", "/home", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks).toStdWString();
-		if (directory == "")
-			directory = hierarchy.warcraft_directory;
-	} while (!fs::exists(directory / "Data"));
+	//fs::path directory;
+	//do {
+	//	directory = QFileDialog::getExistingDirectory(this, "Select Warcraft Directory", "/home", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks).toStdWString();
+	//	if (directory == "")
+	//		directory = hierarchy.warcraft_directory;
+	//} while (!fs::exists(directory / "Data"));
+
+	fs::path directory = find_warcraft_directory();
+	while (!fs::exists(directory / "War3x.mpq")) {
+		directory = QFileDialog::getExistingDirectory(this, u8"Ñ¡ÔñÄ§ÊÞÄ¿Â¼", "/home", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks).toStdWString();
+	}
+
 	QSettings settings;
 	settings.setValue("warcraftDirectory", QString::fromStdString(directory.string()));
 

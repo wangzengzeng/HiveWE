@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Pathing Pallete</string>
+   <string>通行面板</string>
   </property>
   <property name="windowOpacity">
    <double>1.000000000000000</double>
@@ -26,7 +26,7 @@
       <string>The type of operation the brush will apply.</string>
      </property>
      <property name="text">
-      <string>Brush Operation Type</string>
+      <string>刷子配置类型</string>
      </property>
     </widget>
    </item>
@@ -35,10 +35,10 @@
      <item>
       <widget class="QRadioButton" name="replaceType">
        <property name="toolTip">
-        <string>Replaces the existing pathing when the brush is used.</string>
+        <string>替换指定类型</string>
        </property>
        <property name="text">
-        <string>Replace</string>
+        <string>替换</string>
        </property>
        <property name="checked">
         <bool>true</bool>
@@ -51,10 +51,10 @@
      <item>
       <widget class="QRadioButton" name="addType">
        <property name="toolTip">
-        <string>Adds to the existing pathing any brush types that are selected.</string>
+        <string>增加指定类型</string>
        </property>
        <property name="text">
-        <string>Add</string>
+        <string>增加</string>
        </property>
        <attribute name="buttonGroup">
         <string notr="true">toolTypeGroup</string>
@@ -64,10 +64,10 @@
      <item>
       <widget class="QRadioButton" name="removeType">
        <property name="toolTip">
-        <string>Removes from the existing pathing all the brush types selected.</string>
+        <string>移除指定类型</string>
        </property>
        <property name="text">
-        <string>Remove</string>
+        <string>移除</string>
        </property>
        <attribute name="buttonGroup">
         <string notr="true">toolTypeGroup</string>
@@ -82,7 +82,7 @@
       <string>Which pathing type will be applied by the brush.</string>
      </property>
      <property name="text">
-      <string>Brush Type</string>
+      <string>刷子类型</string>
      </property>
     </widget>
    </item>
@@ -91,7 +91,7 @@
      <item>
       <widget class="QPushButton" name="walkable">
        <property name="toolTip">
-        <string>Whether the brush will apply unwalkable.</string>
+        <string>是否可通行的刷子</string>
        </property>
        <property name="text">
         <string/>
@@ -117,7 +117,7 @@
      <item>
       <widget class="QPushButton" name="flyable">
        <property name="toolTip">
-        <string>Whether the brush will apply unflyable.</string>
+        <string>是否可飞行的刷子</string>
        </property>
        <property name="text">
         <string/>
@@ -143,7 +143,7 @@
      <item>
       <widget class="QPushButton" name="buildable">
        <property name="toolTip">
-        <string>Whether the brush will aply unbuildable</string>
+        <string>是否能造房子的刷子</string>
        </property>
        <property name="text">
         <string/>
@@ -174,7 +174,7 @@
       <string>The brush size that will be applied on the terrain. The final dimensions are: (size-1)*2+1 x (size-1)*2+1.</string>
      </property>
      <property name="text">
-      <string>Brush</string>
+      <string>刷子</string>
      </property>
     </widget>
    </item>
@@ -399,6 +399,9 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="toolTip">
+        <string>圆形刷子</string>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -431,6 +434,9 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="toolTip">
+        <string>正方形刷子</string>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -459,6 +465,9 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>菱形刷子</string>
        </property>
        <property name="text">
         <string/>
@@ -535,13 +544,13 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="brushShapeGroup"/>
   <buttongroup name="toolTypeGroup"/>
   <buttongroup name="brushTypeGroup">
    <property name="exclusive">
     <bool>false</bool>
    </property>
   </buttongroup>
+  <buttongroup name="brushShapeGroup"/>
   <buttongroup name="brushSizeGroup"/>
  </buttongroups>
 </ui>

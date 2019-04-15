@@ -64,27 +64,27 @@ TerrainPalette::TerrainPalette(QWidget *parent) : QDialog(parent) {
 
 	// Ribbon
 	QRibbonSection* general_section = new QRibbonSection;
-	general_section->setText("General");
+	general_section->setText(u8"常规");
 
 	QRibbonButton* enforce_water_height_limit = new QRibbonButton;
-	enforce_water_height_limit->setText("Enforce Water\nHeight Limit");
+	enforce_water_height_limit->setText(u8"执行水面\n高度限制");
 	enforce_water_height_limit->setIcon(QIcon("Data/Icons/Ribbon/variation32x32.png"));
 	enforce_water_height_limit->setCheckable(true);
 	enforce_water_height_limit->setChecked(true);
 	general_section->addWidget(enforce_water_height_limit);
 
 	QRibbonButton* change_doodad_heights = new QRibbonButton;
-	change_doodad_heights->setText("Update\nDoodad Z");
+	change_doodad_heights->setText(u8"更新\n装饰物z轴");
 	change_doodad_heights->setIcon(QIcon("Data/Icons/Ribbon/changeheight32x32.png"));
 	change_doodad_heights->setCheckable(true);
 	change_doodad_heights->setChecked(true);
 	general_section->addWidget(change_doodad_heights);
 
 	QRibbonSection* cliff_section = new QRibbonSection;
-	cliff_section->setText("Cliff");
+	cliff_section->setText(u8"悬崖");
 
 	QRibbonButton* relative_cliff_heights = new QRibbonButton;
-	relative_cliff_heights->setText("Relative\nHeight");
+	relative_cliff_heights->setText(u8"相对高度");
 	relative_cliff_heights->setIcon(QIcon("Data/Icons/Ribbon/changeheight32x32.png"));
 	relative_cliff_heights->setCheckable(true);
 	relative_cliff_heights->setChecked(false);
@@ -92,24 +92,24 @@ TerrainPalette::TerrainPalette(QWidget *parent) : QDialog(parent) {
 	cliff_section->addWidget(relative_cliff_heights);
 
 	QRibbonSection* pathing_section = new QRibbonSection;
-	pathing_section->setText("Pathing");
+	pathing_section->setText(u8"通行");
 
 	QRibbonButton* apply_cliff_pathing = new QRibbonButton;
-	apply_cliff_pathing->setText("Cliff\nPathing");
+	apply_cliff_pathing->setText(u8"悬崖\n通行");
 	apply_cliff_pathing->setIcon(QIcon("Data/Icons/Ribbon/rock32x32.png"));
 	apply_cliff_pathing->setCheckable(true);
 	apply_cliff_pathing->setChecked(true);
 	pathing_section->addWidget(apply_cliff_pathing);
 
 	QRibbonButton* apply_tile_pathing = new QRibbonButton;
-	apply_tile_pathing->setText("Tile\nPathing");
+	apply_tile_pathing->setText(u8"地面\n通行");
 	apply_tile_pathing->setIcon(QIcon("Data/Icons/Ribbon/tileset32x32.png"));
 	apply_tile_pathing->setCheckable(true);
 	apply_tile_pathing->setChecked(true);
 	pathing_section->addWidget(apply_tile_pathing);
 
 	QRibbonButton* apply_water_pathing = new QRibbonButton;
-	apply_water_pathing->setText("Water\nPathing");
+	apply_water_pathing->setText(u8"水面\n通行");
 	apply_water_pathing->setIcon(QIcon("Data/Icons/Ribbon/water32x32.png"));
 	apply_water_pathing->setCheckable(true);
 	apply_water_pathing->setChecked(true);
@@ -194,7 +194,7 @@ TerrainPalette::~TerrainPalette() {
 bool TerrainPalette::event(QEvent *e) {
 	if (e->type() == QEvent::WindowActivate) {
 		map->brush = &brush;
-		emit ribbon_tab_requested(ribbon_tab, "Terrain Palette");
+		emit ribbon_tab_requested(ribbon_tab, u8"地形面板");
 	}
 	return QWidget::event(e);
 }

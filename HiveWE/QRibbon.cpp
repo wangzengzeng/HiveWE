@@ -188,7 +188,7 @@ QRibbonMenu::QRibbonMenu(QWidget* parent) : QMenu(parent) {
 //}
 
 QRibbonFileButton::QRibbonFileButton(QWidget* parent) : QToolButton(parent) {
-	setText("File");
+	setText(u8"нд╪Ч");
 	setMenu(menu);
 	setPopupMode(QToolButton::InstantPopup);
 }

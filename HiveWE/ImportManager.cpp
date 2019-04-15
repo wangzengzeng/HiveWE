@@ -22,8 +22,8 @@ ImportManager::ImportManager(QWidget* parent) : QMainWindow(parent) {
 	ui.importFiles->setIcon(file_icon);
 	ui.exportAll->setIcon(file_icon);
 	  
-	ui.treeWidget->invisibleRootItem()->setText(0, "Exported Items"); // So export all works correctly
-	ui.treeWidget->invisibleRootItem()->setText(1, "Directory"); // So export all works correctly
+	ui.treeWidget->invisibleRootItem()->setText(0, u8"导出的文件"); // So export all works correctly
+	ui.treeWidget->invisibleRootItem()->setText(1, u8"文件夹"); // So export all works correctly
 
 	load_files(map->imports.imports);
 
@@ -38,12 +38,12 @@ void ImportManager::custom_menu_popup(const QPoint& pos) {
 	}
 
 	QMenu* menu = new QMenu(this);
-	QAction* import_files_action = new QAction("Import Files");
-	QAction* remove_files_action = new QAction("Remove");
-	QAction* export_file_action = new QAction("Export File");
-	QAction* export_files_action = new QAction("Export Files");
-	QAction* add_directory_action = new QAction("Add Directory");
-	QAction* rename_action = new QAction("Rename");
+	QAction* import_files_action = new QAction(u8"导入文件");
+	QAction* remove_files_action = new QAction(u8"删除");
+	QAction* export_file_action = new QAction(u8"导出文件");
+	QAction* export_files_action = new QAction(u8"导出文件");
+	QAction* add_directory_action = new QAction(u8"添加文件夹");
+	QAction* rename_action = new QAction(u8"删除");
 
 	connect(import_files_action, &QAction::triggered, [&]() { import_files(parent); });
 	connect(add_directory_action, &QAction::triggered, [&]() { create_directory(parent); });
@@ -56,7 +56,7 @@ void ImportManager::custom_menu_popup(const QPoint& pos) {
 		menu->addAction(add_directory_action);
 		menu->addAction(import_files_action);
 		menu->addAction(export_files_action);
-	} else if (parent->text(1) == "Directory") {
+	} else if (parent->text(1) == u8"文件夹") {
 		menu->addAction(rename_action);
 		menu->addAction(remove_files_action);
 		menu->addAction(import_files_action);
@@ -79,33 +79,42 @@ void ImportManager::import_files(QTreeWidgetItem* item) {
 		const fs::path file_name = fs::path(file.toStdString()).filename();
 		const fs::path full_path = "war3mapImported\\" / file_name;
 
+		map->imports.import_file(fs::path(file.toLocal8Bit().toStdString()), full_path);
+
 		QTreeWidgetItem* child = new QTreeWidgetItem(item);
 		child->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
 		child->setText(0, QString::fromStdString(file_name.string()));
 		child->setText(1, get_file_type(file.toStdString()));
 		child->setText(2, QString::number(map->imports.file_size(full_path)));
-		child->setText(3, "No");
+		child->setText(3, u8"否");
 		child->setText(4, QString::fromStdString(full_path.string()));
 		child->setIcon(0, file_icon);
+
+	
 	}
 	item->setExpanded(true);
 	items_changed();
 }
 
 void ImportManager::remove_item(QTreeWidgetItem* item) {
-	const int choice = QMessageBox::warning(this, "HiveWE",
-					"Are you sure you want to remove " + item->text(0),
-					QMessageBox::Yes | QMessageBox::No);
 
-	if (choice == QMessageBox::Yes) {
-		hierarchy.map.file_remove(item->text(0).toStdString());
+	QMessageBox buttonBox(QMessageBox::Warning, "HiveWE", u8"是否要删除该文件 " + item->text(0));
+	buttonBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+	buttonBox.setButtonText(QMessageBox::Ok, u8"确定");
+	buttonBox.setButtonText(QMessageBox::Cancel, u8"取消");
+	
+	const int choice = buttonBox.exec();
+
+
+	if (choice == QMessageBox::Ok) {
+		hierarchy.map.file_remove(item->text(0).toLocal8Bit().toStdString());
 		delete item;
 		items_changed();
 	}
 }
 
 void ImportManager::edit_item(QTreeWidgetItem* item) {
-	if (item->text(1) == "Directory") {
+	if (item->text(1) == u8"文件夹") {
 		return;
 	}
 
@@ -115,13 +124,13 @@ void ImportManager::edit_item(QTreeWidgetItem* item) {
 	editor->ui.fileSize->setText(item->text(2));
 	editor->ui.fileFullPath->setText(item->text(4));
 
-	editor->ui.fileFullPath->setEnabled(item->text(3) == "Yes");
-	editor->ui.customPath->setChecked(item->text(3) == "Yes");
+	editor->ui.fileFullPath->setEnabled(item->text(3) == u8"是");
+	editor->ui.customPath->setChecked(item->text(3) == u8"是");
 
 	connect(editor, &ImportManagerEdit::accepted, [&](bool custom, QString full_path) {
 		SFileRenameFile(hierarchy.map.handle, item->text(4).toStdString().c_str(), full_path.toStdString().c_str());
 		item->setText(4, full_path);
-		item->setText(3, custom ? "Yes" : "No");
+		item->setText(3, custom ? u8"是" : u8"否");
 		editor->close();
 		items_changed();
 	});
@@ -145,13 +154,13 @@ QString ImportManager::get_file_type(const fs::path& path) {
 	const std::string extension = path.extension().string();
 
 	if (extension == ".blp" || extension == ".tga" ) {
-		return "Image/Texture";
+		return u8"图像";
 	} else if (extension == ".mdx") {
-		return "Model";
+		return u8"模型";
 	} else if (extension == ".txt") {
-		return "Text";
+		return u8"文本";
 	} else if (extension == ".mp3" || extension == ".wav") {
-		return "Sound/Music";
+		return u8"声音";
 	}
 
 	return "Other";
@@ -160,8 +169,8 @@ QString ImportManager::get_file_type(const fs::path& path) {
 void ImportManager::create_directory(QTreeWidgetItem* parent) {
 	QTreeWidgetItem* item = new QTreeWidgetItem(parent);
 	item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled);
-	item->setText(0, "Untitled Directory");
-	item->setText(1, "Directory");
+	item->setText(0, u8"新建文件夹");
+	item->setText(1, u8"文件夹");
 	item->setIcon(0, folder_icon);
 	items_changed();
 }
@@ -191,7 +200,7 @@ void ImportManager::rename_directory(QTreeWidgetItem* item) {
 	mainLayout->addWidget(buttons);
 
 	diag->setLayout(mainLayout);
-	diag->setWindowTitle("Rename Directory");
+	diag->setWindowTitle(u8"删除文件夹");
 	diag->exec();
 	items_changed();
 }
@@ -203,16 +212,17 @@ void ImportManager::load_files(const std::vector<ImportItem>& imports) const {
 			item->setText(0, QString::fromStdString(i.name.string()));
 			if (i.directory) {
 				item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled);
-				item->setText(1, "Directory");
+				item->setText(1, u8"文件夹");
 				item->setIcon(0, folder_icon);
 				create_tree(i.children, item);
 			} else {
 				item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
 				item->setText(1, get_file_type(i.name));
 				item->setText(2, QString::number(i.size));
-				item->setText(3, i.custom ? "Yes" : "No");
+				item->setText(3, i.custom ? u8"是" : u8"否");
 				item->setText(4, QString::fromStdString(i.full_path.string()));
 				item->setIcon(0, file_icon);
+				//map->imports.import_file((i.full_path)
 			}
 		}
 	};
@@ -221,11 +231,11 @@ void ImportManager::load_files(const std::vector<ImportItem>& imports) const {
 }
 
 void ImportManager::export_files(QTreeWidgetItem* item) {
-	const fs::path path = QFileDialog::getExistingDirectory(this, "Select Folder", ".").toStdString();
+	const fs::path path = QFileDialog::getExistingDirectory(this, u8"选择文件夹", ".").toStdString();
 
 	const std::function<void(fs::path, QTreeWidgetItem*)> export_files = [&](fs::path target, QTreeWidgetItem* parent) {
-		if (parent->text(1) == "Directory") {
-			target /= parent->text(0).toStdString();
+		if (parent->text(1) == u8"文件夹") {
+			target /= parent->text(0).toLocal8Bit().toStdString();
 			fs::create_directory(target);
 			const int count = parent->childCount();
 			for (int i = 0; i < count; i++) {
@@ -233,6 +243,7 @@ void ImportManager::export_files(QTreeWidgetItem* item) {
 				export_files(target, child);
 			}
 		} else {
+			auto a = parent->text(4).toStdString();
 			map->imports.export_file(target, parent->text(4).toStdString());
 		}
 	};
@@ -259,14 +270,18 @@ void ImportManager::items_changed() {
 
 	const std::function<void(std::vector<ImportItem>&, QTreeWidgetItem*)> recreate_imports = [&](std::vector<ImportItem>& items, QTreeWidgetItem* parent) {
 		const int count = parent->childCount();
+
+		QTextCodec* gbk = QTextCodec::codecForName("gbk");
+
 		for (int i = 0; i < count; i++) {
 			QTreeWidgetItem* item = parent->child(i);
 			ImportItem import_item;
-			import_item.directory = item->text(1) == "Directory";
-			import_item.name = item->text(0).toStdString();
+			import_item.directory = item->text(1) == u8"新建文件夹";
+			
+			import_item.name = item->text(0).toLocal8Bit().toStdString();
 			import_item.size = item->text(2).toInt();
-			import_item.custom = item->text(3) == "Yes";
-			import_item.full_path = item->text(4).toStdString();
+			import_item.custom = item->text(3) == u8"是";
+			import_item.full_path = item->text(4).toLocal8Bit().toStdString();
 
 			if (import_item.directory) {
 				recreate_imports(import_item.children, item);
