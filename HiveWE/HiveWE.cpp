@@ -148,9 +148,9 @@ HiveWE::HiveWE(QWidget* parent) : QMainWindow(parent) {
 	map = new Map();
 	connect(&map->terrain, &Terrain::minimap_changed, minimap, &Minimap::set_minimap);
 	//map->load("C:\\Users\\User\\stack\\Projects\\MCFC\\7.3\\Backup\\MCFC 7.3.w3x");
-	fs::remove(fs::temp_directory_path() / "temp.w3x");
-	fs::copy_file("Data/Test.w3x", fs::temp_directory_path() / "temp.w3x");
-	map->load(fs::temp_directory_path() / "temp.w3x");
+	fs::remove(fs::temp_directory_path() / "temp_map.w3x");
+	fs::copy_file("Data/Test.w3x", fs::temp_directory_path() / "temp_map.w3x");
+	map->load(fs::temp_directory_path() / "temp_map.w3x");
 	
 
 	//QTimer::singleShot(50, [this]() {
@@ -205,8 +205,14 @@ void HiveWE::save_as() {
 }
 
 void HiveWE::closeEvent(QCloseEvent* event) {
-	int choice = QMessageBox::question(this, "Do you want to quit?", "Are you sure you want to quit?", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
 
+
+	QMessageBox buttonBox(QMessageBox::Question, "HiveWE", u8"你要退出吗");
+	buttonBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+	buttonBox.setButtonText(QMessageBox::Yes, u8"确定");
+	buttonBox.setButtonText(QMessageBox::Cancel, u8"取消");
+
+	const int choice = buttonBox.exec();
 	if (choice == QMessageBox::Yes) {
 		event->accept();
 	} else {
