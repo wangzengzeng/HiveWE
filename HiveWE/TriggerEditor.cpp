@@ -19,7 +19,10 @@ TriggerEditor::TriggerEditor(QWidget* parent) : QMainWindow(parent) {
 
 	for (auto& i : map->triggers.categories) {
 		QTreeWidgetItem* item = new QTreeWidgetItem(ui.explorer);
+		item->setFlags(item->flags() | Qt::ItemIsEditable);
 		item->setData(0, Qt::EditRole, QString::fromLocal8Bit(i.name.c_str()));
+		item->setData(0, Qt::UserRole, item->data(0, Qt::EditRole));
+
 		item->setIcon(0, folder_icon);
 		
 		folders[i.id] = item;
@@ -32,7 +35,8 @@ TriggerEditor::TriggerEditor(QWidget* parent) : QMainWindow(parent) {
 	for (auto&& i : map->triggers.triggers) {
 		QTreeWidgetItem* item = new QTreeWidgetItem(folders[i.category_id]);
 		item->setData(0, Qt::EditRole, QString::fromLocal8Bit(i.name.c_str()));
-
+		item->setData(0, Qt::UserRole, item->data(0, Qt::EditRole));
+		item->setFlags(item->flags() | Qt::ItemIsEditable);
 		if (i.is_comment) {
 			item->setIcon(0, trigger_comment_icon);
 		} else {
@@ -48,6 +52,9 @@ TriggerEditor::TriggerEditor(QWidget* parent) : QMainWindow(parent) {
 	category_num = map->triggers.categories.size() + 1;
 
 	connect(ui.explorer, &QTreeWidget::itemClicked, this, &TriggerEditor::item_clicked);
+
+	connect(ui.explorer, &QTreeWidget::itemChanged, this, &TriggerEditor::item_changed);
+
 	connect(ui.explorer, &QTreeWidget::customContextMenuRequested, this, &TriggerEditor::custom_menu_popup);
 	
 
@@ -65,16 +72,19 @@ void TriggerEditor::custom_menu_popup(const QPoint& pos) {
 	QAction* create_category_action = new QAction(u8"新建别类");
 	QAction* create_trigger_action = new QAction(u8"新建触发器");
 	QAction* create_trigger_action2 = new QAction(u8"新建注释");
+	QAction* rename_item_action = new QAction(u8"重命名");
 	QAction* delete_item_action = new QAction(u8"删除");
 
 	connect(create_category_action, &QAction::triggered, [&]() {create_category(item); });
 	connect(create_trigger_action, &QAction::triggered, [&](){create_trigger(item,false);});
 	connect(create_trigger_action2, &QAction::triggered, [&]() {create_trigger(item, true); });
+	connect(rename_item_action, &QAction::triggered, [&]() { item->treeWidget()->editItem(item,0); });
 	connect(delete_item_action, &QAction::triggered, [&]() {delete_item(item); });
 	
 	menu->addAction(create_category_action);
 	menu->addAction(create_trigger_action);
 	menu->addAction(create_trigger_action2);
+	menu->addAction(rename_item_action);
 	menu->addAction(delete_item_action);
 
 	menu->exec(QCursor::pos());
@@ -94,7 +104,10 @@ void TriggerEditor::create_category(QTreeWidgetItem* parent) {
 
 
 	QTreeWidgetItem* item = new QTreeWidgetItem(ui.explorer);
+	item->setFlags(item->flags() | Qt::ItemIsEditable);
 	item->setData(0, Qt::EditRole, QString::fromLocal8Bit(category.name.c_str()));
+	item->setData(0, Qt::UserRole, item->data(0, Qt::EditRole));
+
 	item->setIcon(0, folder_icon);
 
 	folders[category.id] = item;
@@ -131,7 +144,10 @@ void TriggerEditor::create_trigger(QTreeWidgetItem* parent,bool is_comment) {
 
 
 	QTreeWidgetItem* item = new QTreeWidgetItem(folders[folder_id]);
+	item->setFlags(item->flags() | Qt::ItemIsEditable);
 	item->setData(0, Qt::EditRole, QString::fromLocal8Bit(trigger.name.c_str()));
+	item->setData(0, Qt::UserRole, item->data(0, Qt::EditRole));
+
 	if (trigger.is_comment) {
 		item->setIcon(0, trigger_comment_icon);
 	}
@@ -253,7 +269,55 @@ void TriggerEditor::delete_item(QTreeWidgetItem* item) {
 	} else if (categorys.find(item) != categorys.end()) {
 		remove_category(item);
 	}
+}
 
+void TriggerEditor::rename_item(QTreeWidgetItem* item,QString& name) {
+	QString oldName = item->data(0, Qt::UserRole).toString();
+	if (oldName == name) {
+		return;
+	}
+
+	std::string strName = name.toLocal8Bit().toStdString();
+
+	if (files.find(item) != files.end()) {
+		Trigger& trigger = files.at(item).get();
+		int num = 0;
+		for (auto&& i : map->triggers.triggers) {
+			if (strName.compare(i.name) == 0) {
+				QMessageBox::information(this, u8"触发编辑器", u8"重复的名字");
+
+				item->setData(0, Qt::EditRole, QString::fromLocal8Bit(trigger.name.c_str()));
+				return;
+			}
+		}
+
+		trigger.name = strName;
+		item->setData(0, Qt::EditRole,name);
+		item->setData(0, Qt::UserRole, item->data(0, Qt::EditRole));
+
+		for (int i = 0; i < ui.editor->count(); i++) {
+			QWidget* tbl = ui.editor->widget(i);
+			if (tbl->property("TriggerID").toInt() == trigger.id) {
+				ui.editor->tabBar()->setTabText(i, name);
+			}
+		}
+
+	}
+	else if (categorys.find(item) != categorys.end()) {
+		TriggerCategory& category = categorys.at(item).get();
+
+		for (auto&& i : map->triggers.categories) {
+			if (strName.compare(i.name) == 0) {
+				item->setData(0, Qt::EditRole, QString::fromLocal8Bit(category.name.c_str()));
+				QMessageBox::information(this, u8"触发编辑器", u8"重复的名字");
+				return;
+			}
+		}
+
+		category.name = strName;
+		item->setData(0, Qt::EditRole, name);
+		item->setData(0, Qt::UserRole, item->data(0, Qt::EditRole));
+	}
 }
 void TriggerEditor::item_clicked(QTreeWidgetItem* item) {
 	if (files.find(item) == files.end()) {
@@ -296,6 +360,11 @@ void TriggerEditor::item_clicked(QTreeWidgetItem* item) {
 
 	ui.editor->addTab(tab, QString::fromLocal8Bit(trigger.name.c_str()));
 	ui.editor->setCurrentWidget(tab);
+}
+
+void TriggerEditor::item_changed(QTreeWidgetItem* item) {
+	QString name = item->data(0, Qt::EditRole).toString();
+	rename_item(item, name);
 }
 
 void TriggerEditor::show_gui_trigger(QTreeWidget* edit, Trigger& trigger) {

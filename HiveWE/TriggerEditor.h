@@ -33,6 +33,9 @@ private:
 	std::unordered_map<QTreeWidgetItem*, int> folder_ids;
 
 	void item_clicked(QTreeWidgetItem* item);
+
+	void item_changed(QTreeWidgetItem* item);
+
 	void custom_menu_popup(const QPoint& pos);
 	
 	void show_gui_trigger(QTreeWidget* edit, Trigger& trigger);
@@ -45,7 +48,9 @@ private:
 
 	void remove_category(QTreeWidgetItem* item);
 
-	void delete_item(QTreeWidgetItem* parent);
+	void delete_item(QTreeWidgetItem* item);
+
+	void rename_item(QTreeWidgetItem* item, QString& name);
 	
 	std::string get_parameters_names(const std::vector<std::string>& string_parameters, const std::vector<TriggerParameter>& parameters) const ;
 
