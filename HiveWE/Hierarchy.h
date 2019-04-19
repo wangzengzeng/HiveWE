@@ -5,11 +5,14 @@ public:
 	//char tileset = 'L';
 	mpq::MPQ map;
 	mpq::MPQ tileset;
+	mpq::MPQ war3Patch;
 	mpq::MPQ war3xLocal;
 	mpq::MPQ war3x;
 	mpq::MPQ war3Local;
 	mpq::MPQ war3;
 	mpq::MPQ deprecated;
+
+
 	casc::CASC game_data;
 	json::JSON aliases;
 

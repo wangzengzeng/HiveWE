@@ -95,10 +95,10 @@ public:
 	std::string global_jass_comment;
 	std::string global_jass;
 
-	std::vector<TriggerCategory> categories;
+	std::list<TriggerCategory> categories;
 	//std::vector<TriggerVariable> variables;
 	std::unordered_map<std::string, TriggerVariable> variables;
-	std::vector<Trigger> triggers;
+	std::list<Trigger> triggers;
 
 	void load(BinaryReader& reader);
 	void load_jass(BinaryReader& reader);

@@ -17,16 +17,22 @@ TriggerEditor::TriggerEditor(QWidget* parent) : QMainWindow(parent) {
 	condition_icon = texture_to_icon(world_edit_data.data("WorldEditArt", "SEIcon_Condition"));
 	action_icon = texture_to_icon(world_edit_data.data("WorldEditArt", "SEIcon_Action"));
 
-	for (const auto& i : map->triggers.categories) {
+	for (auto& i : map->triggers.categories) {
 		QTreeWidgetItem* item = new QTreeWidgetItem(ui.explorer);
-		item->setData(0, Qt::EditRole, QString::fromStdString(i.name));
+		item->setData(0, Qt::EditRole, QString::fromLocal8Bit(i.name.c_str()));
 		item->setIcon(0, folder_icon);
+		
 		folders[i.id] = item;
+
+		folder_ids.emplace(item, i.id);
+
+		categorys.emplace(item, i);
 	}
 
 	for (auto&& i : map->triggers.triggers) {
 		QTreeWidgetItem* item = new QTreeWidgetItem(folders[i.category_id]);
-		item->setData(0, Qt::EditRole, QString::fromStdString(i.name));
+		item->setData(0, Qt::EditRole, QString::fromLocal8Bit(i.name.c_str()));
+
 		if (i.is_comment) {
 			item->setIcon(0, trigger_comment_icon);
 		} else {
@@ -34,12 +40,221 @@ TriggerEditor::TriggerEditor(QWidget* parent) : QMainWindow(parent) {
 		}
 
 		files.emplace(item, i);
-	}
 
-	connect(ui.explorer, &QTreeWidget::itemDoubleClicked, this, &TriggerEditor::item_clicked);
+		folder_ids.emplace(item, i.category_id);
+
+	}
+	trigger_num = map->triggers.triggers.size() + 1;
+	category_num = map->triggers.categories.size() + 1;
+
+	connect(ui.explorer, &QTreeWidget::itemClicked, this, &TriggerEditor::item_clicked);
+	connect(ui.explorer, &QTreeWidget::customContextMenuRequested, this, &TriggerEditor::custom_menu_popup);
+	
+
 	connect(ui.editor, &QTabWidget::tabCloseRequested, [&](int index) { delete ui.editor->widget(index); });
+
 }
 
+void TriggerEditor::custom_menu_popup(const QPoint& pos) {
+	QTreeWidgetItem* item = ui.explorer->itemAt(pos);
+	if (item == NULL) {
+		return;
+	}
+	QMenu* menu = new QMenu(this);
+
+	QAction* create_category_action = new QAction(u8"新建别类");
+	QAction* create_trigger_action = new QAction(u8"新建触发器");
+	QAction* create_trigger_action2 = new QAction(u8"新建注释");
+	QAction* delete_item_action = new QAction(u8"删除");
+
+	connect(create_category_action, &QAction::triggered, [&]() {create_category(item); });
+	connect(create_trigger_action, &QAction::triggered, [&](){create_trigger(item,false);});
+	connect(create_trigger_action2, &QAction::triggered, [&]() {create_trigger(item, true); });
+	connect(delete_item_action, &QAction::triggered, [&]() {delete_item(item); });
+	
+	menu->addAction(create_category_action);
+	menu->addAction(create_trigger_action);
+	menu->addAction(create_trigger_action2);
+	menu->addAction(delete_item_action);
+
+	menu->exec(QCursor::pos());
+
+}
+
+void TriggerEditor::create_category(QTreeWidgetItem* parent) {
+
+	map->triggers.categories.push_back(TriggerCategory());
+
+
+	TriggerCategory& category = map->triggers.categories.back();
+
+	category.name = "新建文件夹";
+
+	category.id = ++category_num;
+
+
+	QTreeWidgetItem* item = new QTreeWidgetItem(ui.explorer);
+	item->setData(0, Qt::EditRole, QString::fromLocal8Bit(category.name.c_str()));
+	item->setIcon(0, folder_icon);
+
+	folders[category.id] = item;
+
+	folder_ids.emplace(item, category.id);
+
+	categorys.emplace(item, category);
+}
+
+void TriggerEditor::create_trigger(QTreeWidgetItem* parent,bool is_comment) {
+	if (folder_ids.find(parent) == folder_ids.end()) {
+		return;
+	}
+
+	int& folder_id = folder_ids.at(parent);
+
+	map->triggers.triggers.push_back(Trigger());
+
+	Trigger& trigger = map->triggers.triggers.back();
+
+	trigger.id = ++trigger_num;
+
+	trigger.category_id = folder_id;
+
+	trigger.is_comment = is_comment;
+
+	if (is_comment) {
+		
+		trigger.name = "注释" + std::to_string(trigger.id);
+	}
+	else {
+		trigger.name = "新建触发器" + std::to_string(trigger.id);
+	}
+
+
+	QTreeWidgetItem* item = new QTreeWidgetItem(folders[folder_id]);
+	item->setData(0, Qt::EditRole, QString::fromLocal8Bit(trigger.name.c_str()));
+	if (trigger.is_comment) {
+		item->setIcon(0, trigger_comment_icon);
+	}
+	else {
+		item->setIcon(0, file_icon);
+	}
+
+	files.emplace(item, trigger);
+
+	folder_ids.emplace(item, trigger.category_id);
+
+	parent->treeWidget()->expandItem(parent);
+
+	parent->treeWidget()->setCurrentItem(item);
+
+	item_clicked(item);
+
+	
+
+}
+
+void TriggerEditor::remove_trigger(QTreeWidgetItem* item) {
+	if (files.find(item) == files.end()) 
+		return;
+
+	Trigger& trigger = files.at(item).get();
+
+	for (int i = 0; i < ui.editor->count(); i++) {
+		QWidget* tbl = ui.editor->widget(i);
+		if (tbl->property("TriggerID").toInt() == trigger.id) {
+			ui.editor->removeTab(i);
+			delete tbl;
+			break;
+		}
+	}
+
+	for (auto it = map->triggers.triggers.begin(); it != map->triggers.triggers.end(); it++) {
+		if (it->id == trigger.id) {
+			map->triggers.triggers.erase(it);
+			break;
+		}
+	}
+
+	files.erase(item);
+
+	folder_ids.erase(item);
+
+	delete item;
+	
+}
+
+void TriggerEditor::remove_category(QTreeWidgetItem* item) {
+	if (categorys.find(item) == categorys.end())
+		return;
+
+	TriggerCategory& category = categorys.at(item).get();
+
+	//删除该文件夹下的所有触发器
+	std::map<int, bool> ids;
+
+	for (auto it = map->triggers.triggers.begin(); it != map->triggers.triggers.end(); ) {
+		if (it->category_id == category.id) {
+			ids.emplace(it->id, true);
+			map->triggers.triggers.erase(it++);
+		}
+		else {
+			it++;
+		}
+	}
+
+	for (int i = 0;i< item->childCount();){
+		QTreeWidgetItem* child = item->child(i);
+		auto it = files.find(child);
+		if (it != files.end()) {
+
+			files.erase(child);
+
+			folder_ids.erase(child);
+
+			delete child;
+		}
+		else {
+			i++;
+		}
+	}
+
+	for (int i = 0; i < ui.editor->count(); ) {
+		QWidget* tbl = ui.editor->widget(i);
+		int id = tbl->property("TriggerID").toInt();
+		if (ids.find(id) != ids.end()) {
+			ui.editor->removeTab(i);
+			delete tbl;
+		} else {
+			i++;
+		}
+	}
+	
+	folders.erase(category.id);
+
+	for (auto it = map->triggers.categories.begin(); it != map->triggers.categories.end(); it++) {
+		if (it->id == category.id) {
+			map->triggers.categories.erase(it);
+			break;
+		}
+	}
+
+	categorys.erase(item);
+
+	folder_ids.erase(item);
+
+	delete item;
+}
+
+void TriggerEditor::delete_item(QTreeWidgetItem* item) {
+
+	if (files.find(item) != files.end()) {
+		remove_trigger(item);
+		
+	} else if (categorys.find(item) != categorys.end()) {
+		remove_category(item);
+	}
+
+}
 void TriggerEditor::item_clicked(QTreeWidgetItem* item) {
 	if (files.find(item) == files.end()) {
 		return;
@@ -79,7 +294,7 @@ void TriggerEditor::item_clicked(QTreeWidgetItem* item) {
 		edit->expandAll();
 	}
 
-	ui.editor->addTab(tab, QString::fromStdString(trigger.name));
+	ui.editor->addTab(tab, QString::fromLocal8Bit(trigger.name.c_str()));
 	ui.editor->setCurrentWidget(tab);
 }
 
